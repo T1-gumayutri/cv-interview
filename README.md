@@ -1,41 +1,92 @@
-# CVInterview
+# 🚀 AI Mock Interview Assistant
 
-CVInterview is an AI-powered interview simulation platform that matches a candidate's CV against a Job Description (JD), assesses their fit, and simulates a targeted interview based on the gaps found.
+Hệ thống phỏng vấn mô phỏng ứng dụng Trí tuệ Nhân tạo (AI), cho phép ứng viên tải lên CV của họ và trải nghiệm một buổi phỏng vấn sát với thực tế dựa trên Job Description (JD) của công ty.
 
-## Features
-- **Gap Analysis**: Compares a candidate's CV against a Job Description to find matched skills, missing skills, and areas of overqualification.
-- **Targeted Questions**: Generates personalized interview questions focusing on missing skills, behavioral aspects, and a reality check.
-- **Voice Interview**: Simulates a live interview using the Web Speech API to capture answers.
-- **Evaluation & Feedback**: Evaluates each answer individually and provides a comprehensive final report with a fit score and actionable advice.
+Dự án sử dụng **Llama 3.3 70B** (thông qua [Groq API](https://groq.com/)) để phân tích khoảng cách kỹ năng (Gap Analysis), tự động sinh câu hỏi, và chấm điểm câu trả lời qua giọng nói của ứng viên một cách khắt khe nhưng công tâm.
 
-## Technology Stack
-- **Frontend**: ReactJS (Vite), TailwindCSS v3, Axios, React Router v6
-- **Backend**: Node.js, Express.js
-- **Database**: MongoDB + Mongoose
-- **AI**: Google Gemini API (`gemini-1.5-flash` or `gemini-1.5-pro`)
-- **PDF Parsing**: `pdf-parse`
+## ✨ Tính Năng Nổi Bật
 
-## Setup Instructions
+- **📄 Phân Tích CV Nâng Cao**: Upload CV định dạng PDF, trích xuất text tự động.
+- **🎯 Gap Analysis**: Đánh giá độ phù hợp (Fit Score) giữa CV và JD thực tế, chỉ ra kỹ năng còn thiếu.
+- **🤖 Dynamic Questions**: AI tự động tạo ra 5 câu hỏi phỏng vấn tập trung vào điểm yếu và các kỹ năng còn thiếu, bao gồm cả câu hỏi tình huống (Behavioral) và kiểm tra thực tế (Reality Check).
+- **🎙️ Ghi Âm & Chấm Điểm (Speech-to-Text & Evaluation)**: Ứng viên trả lời bằng giọng nói. AI sẽ đánh giá chi tiết Điểm mạnh, Điểm yếu, sửa lỗi ngữ pháp và đưa ra câu trả lời mẫu (Model Answer).
+- **📊 Report Tổng Quan**: Báo cáo quyết định tuyển dụng (Hire / Maybe / Not Yet) cho bộ phận HR.
+- **🔐 Admin Dashboard**: Quản lý các phiên phỏng vấn, xem lại file âm thanh và cấu hình Job Description của công ty.
+- **🌐 Đa Ngôn Ngữ**: Hỗ trợ phỏng vấn bằng cả Tiếng Anh (en-US) và Tiếng Việt (vi-VN).
 
-### Prerequisites
-- Node.js (v18+ recommended)
-- MongoDB running locally or a MongoDB Atlas URI
-- Google Gemini API Key
+## 🛠️ Công Nghệ Sử Dụng
 
-### Backend Setup
-1. Navigate to the `server` directory: `cd server`
-2. Install dependencies: `npm install`
-3. Configure environment variables in `server/.env`.
-4. Start the server: `npm start` (runs on port 5000)
+### 💻 Front-end (Client)
 
-### Frontend Setup
-1. Navigate to the `client` directory: `cd client`
-2. Install dependencies: `npm install`
-3. Start the Vite development server: `npm run dev` (runs on port 5173)
+- **React.js** (Vite/CRA)
+- **Tailwind CSS**: Styling giao diện hiện đại (Dark mode theme).
+- **Lucide React**: Hệ thống Icon.
 
-## Usage
-1. Open the frontend URL in your browser.
-2. Upload your CV (PDF) and paste the Job Description.
-3. Review the AI-generated Gap Analysis.
-4. Complete the simulated interview using your microphone.
-5. Receive your detailed, honest final assessment report.
+### ⚙️ Back-end (Server)
+
+- **Node.js & Express.js**: RESTful API.
+- **MongoDB / Mongoose**: Lưu trữ dữ liệu các phiên phỏng vấn (Sessions) và Cấu hình (Settings).
+- **Multer**: Xử lý upload file (PDF, MP4/WebM/Audio).
+- **PDF-Parse**: Đọc và trích xuất dữ liệu từ file PDF CV.
+- **Groq SDK**: Tích hợp Model AI siêu tốc (Llama-3.3-70b-versatile).
+
+## 🚀 Hướng Dẫn Cài Đặt (Local Development)
+
+### Yêu cầu hệ thống:
+
+- [Node.js](https://nodejs.org/en/) (v16 trở lên)
+- [MongoDB](https://www.mongodb.com/) (Local hoặc MongoDB Atlas)
+- Tài khoản và API Key của [Groq Cloud](https://console.groq.com/keys)
+
+### 1. Cài đặt Server (Back-end)
+
+Di chuyển vào thư mục server và cài đặt các dependencies:
+
+```bash
+cd server
+npm install
+```
+
+Tạo file `.env` trong thư mục `server/` và thiết lập các biến môi trường:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/cv_interview  # Hoặc link MongoDB Atlas của bạn
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+Khởi động server:
+
+```bash
+npm run dev
+# Server chạy tại http://localhost:5000
+```
+
+### 2. Cài đặt Client (Front-end)
+
+Mở một terminal mới, di chuyển vào thư mục client và cài đặt dependencies:
+
+```bash
+cd client
+npm install
+```
+
+Khởi động React app:
+
+```bash
+npm start
+# (Hoặc npm run dev nếu dùng Vite)
+```
+
+## 📁 Cấu Trúc Thư Mục Quan Trọng
+
+```text
+CVInterview/
+├── client/                 # Mã nguồn React Frontend
+└── server/                 # Mã nguồn Node.js Backend
+    ├── controllers/        # Xử lý logic API (Upload, Admin,...)
+    ├── middleware/         # Cấu hình Multer lưu file (PDF, Audio)
+    ├── models/             # Schema Database MongoDB
+    ├── services/           # Chứa logic gọi Groq API (geminiService) & phân tích PDF
+    └── uploads/            # Nơi lưu file tĩnh do người dùng đẩy lên (Git-ignored)
+```

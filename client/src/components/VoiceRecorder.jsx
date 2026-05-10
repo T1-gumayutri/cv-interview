@@ -147,7 +147,7 @@ const VoiceRecorder = ({ onSubmit, mode = 'practice', language = 'vi-VN' }) => {
     stopRecording();
     
     if (!transcript.trim()) {
-      alert("Please provide an answer before submitting.");
+      alert("Please provide an answer.");
       return;
     }
 
@@ -257,8 +257,7 @@ const VoiceRecorder = ({ onSubmit, mode = 'practice', language = 'vi-VN' }) => {
 
         <button
           onClick={handleSubmit}
-          disabled={!transcript.trim()}
-          className="ml-auto bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white py-3 px-8 rounded-xl font-semibold transition-all hover:scale-105 disabled:hover:scale-100 flex items-center gap-2 shadow-xl shadow-emerald-500/20 disabled:shadow-none"
+          className="ml-auto bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-8 rounded-xl font-semibold transition-all hover:scale-105 flex items-center gap-2 shadow-xl shadow-emerald-500/20"
         >
           {isRecording ? 'Stop & Submit' : 'Submit Answer'} <Send className="w-4 h-4" />
         </button>
