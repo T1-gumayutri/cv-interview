@@ -61,3 +61,41 @@ exports.getSession = async (req, res) => {
     res.status(500).json({ error: 'Failed to retrieve session' });
   }
 };
+
+exports.addExtraQuestion = async (req, res) => {
+  try {
+    const { sessionId, difficulty } = req.body;
+
+    if (!sessionId || !difficulty) {
+      return res.status(400).json({ error: 'sessionId and difficulty are required' });
+    }
+
+    const session = await Session.findOne({ sessionId });
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
+
+    const currentQuestionsCount = session.questions.length;
+    
+    // Call Gemini to generate an extra question
+    const extraQuestionData = await geminiService.generateExtraQuestion(
+      session.jobDescription,
+      session.missingSkills,
+      difficulty,
+      currentQuestionsCount,
+      session.interviewLanguage
+    );
+
+    if (extraQuestionData && extraQuestionData.question) {
+      session.questions.push(extraQuestionData.question);
+      await session.save();
+      return res.status(200).json(session);
+    } else {
+      throw new Error("Failed to generate extra question");
+    }
+
+  } catch (error) {
+    console.error('Add Extra Question Error:', error);
+    res.status(500).json({ error: 'Failed to add extra question' });
+  }
+};

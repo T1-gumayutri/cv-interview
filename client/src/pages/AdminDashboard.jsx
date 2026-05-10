@@ -213,7 +213,7 @@ const AdminDashboard = () => {
                     </td>
                     <td className="py-4 px-6">
                       {session.totalScore !== undefined ? (
-                        <span className="text-indigo-400 font-bold">{session.totalScore}/50</span>
+                        <span className="text-indigo-400 font-bold">{session.totalScore}/10</span>
                       ) : <span className="text-slate-500">-</span>}
                     </td>
                     <td className="py-4 px-6">

@@ -47,10 +47,10 @@ exports.analyzeGap = async (cvText, jobDescription, language = 'vi-VN') => {
   return await callGroq(prompt);
 };
 
-exports.generateQuestions = async (gapAnalysisJSON, jobDescription, language = 'vi-VN') => {
+exports.generateQuestions = async (gapAnalysisJSON, jobDescription, language = 'vi-VN', questionCount = 5, difficulty = 'Medium') => {
   const targetLang = language === 'en-US' ? 'English' : 'VIETNAMESE';
   const prompt = `
-  Based on this gap analysis, generate exactly 5 interview questions.
+  Based on this gap analysis, generate exactly ${questionCount} interview questions. The questions MUST BE tailored to a '${difficulty}' difficulty level. Adjust the technical depth, complexity, and strictness of the questions accordingly.
   Focus on missingSkills and JD responsibilities.
   Include 1 behavioral question and 1 reality check about their level.
   
@@ -103,6 +103,32 @@ exports.evaluateAnswer = async (jobDescription, questionText, questionType, tran
   return await callGroq(prompt);
 };
 
+exports.generateExtraQuestion = async (jobDescription, missingSkills, difficulty, currentQuestionsCount, language = 'vi-VN') => {
+  const targetLang = language === 'en-US' ? 'English' : 'VIETNAMESE';
+  const prompt = `
+  You are an expert technical interviewer. The candidate wants to practice more.
+  Based on the Job Description and their missing skills, generate EXACTLY ONE new interview question.
+  
+  Job Description: ${jobDescription}
+  Missing Skills: ${missingSkills?.join(', ') || 'None'}
+  Requested Difficulty Level: ${difficulty}
+  
+  Ensure the question strictly matches the requested difficulty ('easy', 'medium', or 'hard').
+  
+  You MUST return ONLY valid JSON with this exact structure.
+  IMPORTANT: You MUST generate ALL textual values (especially 'text' and 'topic') in natural ${targetLang} language. The JSON keys MUST remain in English.
+  {
+    "question": {
+      "id": ${currentQuestionsCount + 1},
+      "text": "string (Question in ${targetLang})",
+      "topic": "string (Topic in ${targetLang})",
+      "type": "extra_probe"
+    }
+  }
+  `;
+  return await callGroq(prompt);
+};
+
 exports.generateFinalReport = async (fitScore, fitVerdict, missingSkills, answersJSON, language = 'vi-VN') => {
   const targetLang = language === 'en-US' ? 'English' : 'VIETNAMESE';
   const prompt = `
@@ -116,7 +142,7 @@ exports.generateFinalReport = async (fitScore, fitVerdict, missingSkills, answer
   You MUST return ONLY valid JSON with this exact structure.
   IMPORTANT: You MUST generate ALL textual values in natural ${targetLang} language. The JSON keys MUST remain in English. (Except hiringRecommendation values should remain exactly as shown).
   {
-    "overallFeedback": "string (HIGHLY DETAILED analysis, at least 2 long paragraphs detailing their technical depth and communication skills in ${targetLang})",
+    "overallFeedback": "string (EXTREMELY comprehensive markdown report in ${targetLang}. MUST be heavily detailed and structurally divided into these EXACT sections: \\n\\n### 🌟 Strengths\\n...\\n\\n### ⚠️ Weaknesses\\n...\\n\\n### 🎯 Actionable Roadmap for Improvement\\n...\\n\\n### 💡 Final Verdict\\n...)",
     "closingGaps": ["string (in ${targetLang})"],
     "hiringRecommendation": "Hire" | "Maybe" | "Not Yet"
   }

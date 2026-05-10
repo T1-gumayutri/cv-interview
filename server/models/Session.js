@@ -6,7 +6,7 @@ const questionSchema = new mongoose.Schema({
   topic: String,
   type: {
     type: String,
-    enum: ['gap_probe', 'behavioral', 'reality_check']
+    enum: ['gap_probe', 'behavioral', 'reality_check', 'extra_probe']
   }
 });
 

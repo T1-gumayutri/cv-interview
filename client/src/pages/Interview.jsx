@@ -15,6 +15,8 @@ const Interview = () => {
   const [evaluationResult, setEvaluationResult] = useState(null);
   const [finishing, setFinishing] = useState(false);
   const [voices, setVoices] = useState([]);
+  const [extraDifficulty, setExtraDifficulty] = useState('medium');
+  const [isAddingQuestion, setIsAddingQuestion] = useState(false);
 
   useEffect(() => {
     const handleVoicesChanged = () => {
@@ -106,6 +108,24 @@ const Interview = () => {
     }
   };
 
+  const handleAddExtraQuestion = async () => {
+    setIsAddingQuestion(true);
+    try {
+      const res = await api.post('/interview/add-question', {
+        sessionId,
+        difficulty: extraDifficulty
+      });
+      setSessionData(res.data);
+      setEvaluationResult(null);
+      setCurrentQIndex(res.data.questions.length - 1);
+    } catch (err) {
+      console.error(err);
+      alert('Failed to generate extra question.');
+    } finally {
+      setIsAddingQuestion(false);
+    }
+  };
+
   const handleFinishInterview = async () => {
     setFinishing(true);
     try {
@@ -191,7 +211,7 @@ const Interview = () => {
             </div>
           </div>
 
-          <div className="pt-6 flex justify-end">
+          <div className="pt-6 flex flex-col md:flex-row justify-end items-center gap-4">
             {!isLastQuestion ? (
               <button 
                 onClick={handleNextQuestion}
@@ -200,14 +220,38 @@ const Interview = () => {
                 Next Question →
               </button>
             ) : (
-              <button 
-                onClick={handleFinishInterview}
-                disabled={finishing}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-6 rounded-xl font-semibold transition-all flex items-center gap-2"
-              >
-                {finishing && <Loader2 className="w-4 h-4 animate-spin" />}
-                Finish Interview
-              </button>
+              <>
+                {sessionData.mode === 'practice' && (
+                  <div className="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800">
+                    <select 
+                      value={extraDifficulty} 
+                      onChange={(e) => setExtraDifficulty(e.target.value)}
+                      className="bg-slate-900 text-slate-200 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-indigo-500"
+                    >
+                      <option value="easy">Easy</option>
+                      <option value="medium">Medium</option>
+                      <option value="hard">Hard</option>
+                    </select>
+                    <button 
+                      onClick={handleAddExtraQuestion}
+                      disabled={isAddingQuestion}
+                      className="bg-blue-600 hover:bg-blue-500 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all flex items-center gap-2"
+                    >
+                      {isAddingQuestion && <Loader2 className="w-4 h-4 animate-spin" />}
+                      ➕ Practice More
+                    </button>
+                  </div>
+                )}
+                
+                <button 
+                  onClick={handleFinishInterview}
+                  disabled={finishing}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-6 rounded-xl font-semibold transition-all flex items-center gap-2"
+                >
+                  {finishing && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Finish Interview
+                </button>
+              </>
             )}
           </div>
         </div>

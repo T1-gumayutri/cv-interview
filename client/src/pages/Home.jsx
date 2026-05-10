@@ -13,6 +13,8 @@ const Home = () => {
   const [cvFile, setCvFile] = useState(null);
   const [jobDescription, setJobDescription] = useState('');
   const [interviewLanguage, setInterviewLanguage] = useState('vi-VN');
+  const [questionCount, setQuestionCount] = useState(5);
+  const [difficulty, setDifficulty] = useState('Medium');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -57,6 +59,8 @@ const Home = () => {
       const payload = { sessionId };
       if (mode === 'practice') {
         payload.jobDescription = jobDescription;
+        payload.questionCount = questionCount;
+        payload.difficulty = difficulty;
       }
       
       await api.post('/analyze', payload);
@@ -175,7 +179,37 @@ const Home = () => {
       <div className="grid md:grid-cols-2 gap-8">
         <CVUploader onFileSelect={setCvFile} selectedFile={cvFile} />
         {mode === 'practice' ? (
-          <JDInput value={jobDescription} onChange={setJobDescription} />
+          <div className="flex flex-col gap-6">
+            <JDInput value={jobDescription} onChange={setJobDescription} />
+            <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-lg">
+               <h3 className="text-lg font-semibold text-slate-200 mb-4">Practice Settings</h3>
+               <div className="space-y-4">
+                 <div>
+                   <label className="block text-sm font-medium text-slate-400 mb-2">Difficulty</label>
+                   <select 
+                     value={difficulty} 
+                     onChange={(e) => setDifficulty(e.target.value)}
+                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:border-indigo-500"
+                   >
+                     <option value="Easy">Easy</option>
+                     <option value="Medium">Medium</option>
+                     <option value="Hard">Hard</option>
+                   </select>
+                 </div>
+                 <div>
+                   <label className="block text-sm font-medium text-slate-400 mb-2">Number of Questions: {questionCount}</label>
+                   <input 
+                     type="range" 
+                     min="1" 
+                     max="10" 
+                     value={questionCount}
+                     onChange={(e) => setQuestionCount(Number(e.target.value))}
+                     className="w-full accent-indigo-500"
+                   />
+                 </div>
+               </div>
+            </div>
+          </div>
         ) : (
           <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex flex-col shadow-lg h-full max-h-[400px]">
              <div className="flex items-center gap-2 mb-4">

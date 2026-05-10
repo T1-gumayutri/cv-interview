@@ -4,7 +4,7 @@ const geminiService = require('../services/geminiService');
 
 exports.analyzeGap = async (req, res) => {
   try {
-    const { sessionId, jobDescription: bodyJD } = req.body;
+    const { sessionId, jobDescription: bodyJD, questionCount, difficulty } = req.body;
 
     if (!sessionId) {
       return res.status(400).json({ error: 'sessionId is required' });
@@ -43,8 +43,15 @@ exports.analyzeGap = async (req, res) => {
     session.overqualified = gapAnalysis.overqualified;
     session.summary = gapAnalysis.summary;
 
+    let finalCount = 5;
+    let finalDifficulty = 'Medium';
+    if (session.mode === 'practice') {
+       finalCount = Number(questionCount) || 5;
+       finalDifficulty = difficulty || 'Medium';
+    }
+
     // Call Gemini #2: Generate targeted questions
-    const generatedQuestions = await geminiService.generateQuestions(gapAnalysis, jobDescription, session.interviewLanguage);
+    const generatedQuestions = await geminiService.generateQuestions(gapAnalysis, jobDescription, session.interviewLanguage, finalCount, finalDifficulty);
     
     session.questions = generatedQuestions.questions;
     session.status = 'analyzed';
